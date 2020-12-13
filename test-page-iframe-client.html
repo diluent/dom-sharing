@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Page</title>
+  <script src="./dist/browser-sharing.js"></script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      BrowserSharing.initObserver();
+  
+      document.getElementById('add-button').addEventListener('click', function() {
+        const newDiv = document.createElement("div"); 
+        newDiv.innerText = Math.ceil(Math.random() * 1000);
+        document.getElementsByClassName('list')[1].appendChild(newDiv);
+      });
+    });
+    </script>
+</head>
+<body>
+  <div id="root">
+      <button id='add-button'>add</button>
+      <div>aaa</div>
+      <div>
+        <div>
+          <ul class="list">
+          </ul>
+        </div>
+        <div class='node1'>
+          <ul class="list">
+          </ul>
+          <ul class="list">
+          </ul>
+        </div>
+      </div>
+      <ul class="list">
+      </ul>
+  </div>
+</body>
+</html>

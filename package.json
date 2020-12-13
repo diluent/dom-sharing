@@ -1,0 +1,28 @@
+{
+  "name": "dom-sharing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build",
+    "build": "NODE_ENV=development webpack",
+    "build:dev": "NODE_ENV=development webpack -w",
+    "build:prod": "NODE_ENV=production webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": "10.x"
+  },
+  "dependencies": {
+    "domjson": "^0.1.2",
+    "selector-generator": "^0.3.1",
+    "typescript": "^4.0.2"
+  },
+  "devDependencies": {
+    "ts-loader": "^8.0.3",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
