@@ -13,17 +13,28 @@ export function initObserver() {
     const callback = function(mutationsList: MutationRecord[], observer: MutationObserver) {
         for(const mutation of mutationsList) {
             if (mutation.type === 'childList') {
-                // console.log('A child node has been added or removed.', mutation);
-                if (mutation.addedNodes && mutation.addedNodes.length) {
-                    // const json = toJSON(mutation.addedNodes[0]);
+                console.log('mutation', mutation)
 
-                    const selector = generator.getSelector(mutation.target);
+                const selector = generator.getSelector(mutation.target);
+                const htmlString = serializer.serializeToString(mutation.target);
 
-                    mutation.addedNodes.forEach(node => {
-                        const htmlString = serializer.serializeToString(node);
-                        sendMessage(htmlString, selector);
-                    });
-                }
+                sendMessage({
+                    operation: 'add',
+                    selector,
+                    htmlString,
+                });
+
+                // mutation.addedNodes.forEach(node => {
+                //     const htmlString = serializer.serializeToString(node);
+                //     sendMessage({
+                //         operation: 'add',
+                //         selector,
+                //         htmlString,
+                //     });
+                // });
+
+                // mutation.removedNodes.forEach(node => {
+                // });
             }
             else if (mutation.type === 'attributes') {
                 console.log('The ' + mutation.attributeName + ' attribute was modified.');
@@ -42,21 +53,29 @@ function sendAllDOM() {
     const selector = '#root';
     const element = document.querySelector(selector);
     const htmlString = serializer.serializeToString(element);
-    sendMessage(htmlString, selector);
+    sendMessage({operation: 'add', htmlString, selector});
 }
 
-function update({html, selector, type}) {
+function update({htmlString, selector, operation}: ISyncEvent) {
     const element = document.querySelector(selector);
 
-    if (element && type === "syncDom") {
-        console.log('UPDATER - try update');
+    if (!element) {
+        throw Error('element not found');
+    }
 
+    console.log('UPDATER:', operation);
 
-        // const parser = new DOMParser();
-        // const doc = parser.parseFromString(html, "text/xml");
-        // console.log('DOC', doc.documentElement);
-        // element.appendChild(doc);
-        element.insertAdjacentHTML('beforeend', html);
+    switch(operation) {
+        case 'add':
+                // const parser = new DOMParser();
+                // const doc = parser.parseFromString(html, "text/xml");
+                // console.log('DOC', doc.documentElement);
+                // element.appendChild(doc);
+            element.innerHTML = '';
+            element.insertAdjacentHTML('afterbegin', htmlString);
+        case 'remove':
+            // todo
+
     }
 }
 
@@ -67,11 +86,21 @@ export function initListener() {
     })
 }
 
-function sendMessage(html: string, selector: string) {
-    console.log('sendMessage', selector, html);
+interface ISyncEvent {
+    operation: 'add' | 'remove',
+    selector: string,
+    htmlString?: string,
+}
+
+function sendMessage({
+    operation,
+    selector,
+    htmlString,
+}: ISyncEvent) {
+    console.log('sendMessage', operation, selector, htmlString);
     window.parent.postMessage({
-        type: 'syncDom',
-        html,
+        operation,
+        htmlString,
         selector,
     }, '*');
 }

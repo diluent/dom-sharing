@@ -14,12 +14,25 @@
         newDiv.innerText = Math.ceil(Math.random() * 1000);
         document.getElementsByClassName('list')[1].appendChild(newDiv);
       });
+
+      document.getElementById('delete-button').addEventListener('click', function() {
+        const parent = document.getElementsByClassName('list')[1];
+        if (!parent) {
+          return;
+        }
+        const list = parent.children;
+
+        if (list.length) {
+          parent.removeChild(list[list.length - 1]);
+        }
+      });
     });
     </script>
 </head>
 <body>
   <div id="root">
       <button id='add-button'>add</button>
+      <button id='delete-button'>delete</button>
       <div>aaa</div>
       <div>
         <div>
