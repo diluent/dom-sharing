@@ -59,14 +59,18 @@ export function initObserver() {
 
 function addChangeListener() {
     document.querySelectorAll('input').forEach((input: HTMLInputElement) => {
-        input.addEventListener('keyup', event => {
-            console.log('event.target', event);
+        const handler = (event: Event) => {
+            const type = event.target.getAttribute('type');
+            const isText = !type || type === 'text';
             sendMessage({
-                operation: 'changeValue',
+                operation: isText ? 'changeValue' : 'changeChecked',
                 selector: getSelector(event.target as Node),
-                value: event.target.value,
+                value: isText ? event.target.value : event.target.checked,
             });
-        });
+        }
+
+        input.addEventListener('change', handler);
+        input.addEventListener('keyup', handler);
     });
 }
 
@@ -98,6 +102,8 @@ function update({value, selector, operation}: ISyncEvent) {
             element.insertAdjacentHTML('afterbegin', value);
         case 'changeValue':
             element.value = value;
+        case 'changeChecked':
+            element.checked = value;
     }
 }
 
@@ -109,7 +115,7 @@ export function initListener() {
 }
 
 interface ISyncEvent {
-    operation: 'update' | 'changeValue',
+    operation: 'update' | 'changeValue' | 'changeChecked',
     selector: string,
     value?: string,
 }
