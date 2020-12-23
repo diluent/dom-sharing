@@ -1,27 +1,37 @@
 import {toJSON, toDOM} from 'domjson';
-import 'selector-generator';
+// import 'selector-generator';
+import getCssSelector from 'css-selector-generator';
+
+const serializer = new XMLSerializer();
+
+function getSelector(element: Node) {
+    // const generator = new SelectorGenerator() as any;
+    // generator.getSelector(element);
+    const options = {root: document.querySelector('body')};
+    return getCssSelector(element, options);
+}
 
 export function initObserver() {
     sendAllDOM();
+    addChangeListener();
 
-    const generator = new SelectorGenerator() as any;
-    const serializer = new XMLSerializer();
 
     const targetNode = document.getElementById('root');
     const config = { attributes: true, childList: true, subtree: true };
 
     const callback = function(mutationsList: MutationRecord[], observer: MutationObserver) {
         for(const mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                console.log('mutation', mutation)
+            console.log('mutation', mutation)
 
-                const selector = generator.getSelector(mutation.target);
-                const htmlString = serializer.serializeToString(mutation.target);
+            if (mutation.type === 'childList') {
+
+                const selector = getSelector(mutation.target);
+                const value = serializer.serializeToString(mutation.target);
 
                 sendMessage({
-                    operation: 'add',
+                    operation: 'update',
                     selector,
-                    htmlString,
+                    value,
                 });
 
                 // mutation.addedNodes.forEach(node => {
@@ -47,16 +57,29 @@ export function initObserver() {
     // observer.disconnect();
 }
 
+function addChangeListener() {
+    document.querySelectorAll('input').forEach((input: HTMLInputElement) => {
+        input.addEventListener('keyup', event => {
+            console.log('event.target', event);
+            sendMessage({
+                operation: 'changeValue',
+                selector: getSelector(event.target as Node),
+                value: event.target.value,
+            });
+        });
+    });
+}
+
 function sendAllDOM() {
     const serializer = new XMLSerializer();
 
     const selector = '#root';
     const element = document.querySelector(selector);
-    const htmlString = serializer.serializeToString(element);
-    sendMessage({operation: 'add', htmlString, selector});
+    const value = serializer.serializeToString(element);
+    sendMessage({operation: 'update', value, selector});
 }
 
-function update({htmlString, selector, operation}: ISyncEvent) {
+function update({value, selector, operation}: ISyncEvent) {
     const element = document.querySelector(selector);
 
     if (!element) {
@@ -66,16 +89,15 @@ function update({htmlString, selector, operation}: ISyncEvent) {
     console.log('UPDATER:', operation);
 
     switch(operation) {
-        case 'add':
+        case 'update':
                 // const parser = new DOMParser();
                 // const doc = parser.parseFromString(html, "text/xml");
                 // console.log('DOC', doc.documentElement);
                 // element.appendChild(doc);
             element.innerHTML = '';
-            element.insertAdjacentHTML('afterbegin', htmlString);
-        case 'remove':
-            // todo
-
+            element.insertAdjacentHTML('afterbegin', value);
+        case 'changeValue':
+            element.value = value;
     }
 }
 
@@ -87,20 +109,20 @@ export function initListener() {
 }
 
 interface ISyncEvent {
-    operation: 'add' | 'remove',
+    operation: 'update' | 'changeValue',
     selector: string,
-    htmlString?: string,
+    value?: string,
 }
 
 function sendMessage({
     operation,
     selector,
-    htmlString,
+    value,
 }: ISyncEvent) {
-    console.log('sendMessage', operation, selector, htmlString);
+    console.log('sendMessage', operation, selector, value);
     window.parent.postMessage({
         operation,
-        htmlString,
+        value,
         selector,
     }, '*');
 }
