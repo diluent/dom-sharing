@@ -77,10 +77,18 @@ function addChangeListener() {
 function sendAllDOM() {
     const serializer = new XMLSerializer();
 
-    const selector = '#root';
+    const selector = 'body';
     const element = document.querySelector(selector);
     const value = serializer.serializeToString(element);
     sendMessage({operation: 'update', value, selector});
+
+    const styleElements = document.querySelectorAll('head > style');
+
+    styleElements.forEach(node => {
+        const value = serializer.serializeToString(node);
+        const selector = 'head';
+        sendMessage({operation: 'updateHead', value, selector});
+    })
 }
 
 function update({value, selector, operation}: ISyncEvent) {
@@ -94,14 +102,15 @@ function update({value, selector, operation}: ISyncEvent) {
 
     switch(operation) {
         case 'update':
-                // const parser = new DOMParser();
-                // const doc = parser.parseFromString(html, "text/xml");
-                // console.log('DOC', doc.documentElement);
-                // element.appendChild(doc);
             element.innerHTML = '';
             element.insertAdjacentHTML('afterbegin', value);
+            break;
+        case 'updateHead':
+            element.insertAdjacentHTML('beforeend', value);
+            break;
         case 'changeValue':
             element.value = value;
+            break;
         case 'changeChecked':
             element.checked = value;
     }
@@ -115,7 +124,7 @@ export function initListener() {
 }
 
 interface ISyncEvent {
-    operation: 'update' | 'changeValue' | 'changeChecked',
+    operation: 'update' | 'updateHead' | 'changeValue' | 'changeChecked',
     selector: string,
     value?: string,
 }
