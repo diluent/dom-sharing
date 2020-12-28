@@ -1,4 +1,4 @@
-#TODO
+# TODO
 
 ## client's core
 1. Поддержать обновление всх контролов (input, checkbox, radio, ...)
