@@ -14,7 +14,7 @@ function getSelector(element: Node) {
 export function initObserver() {
     sendAllDOM();
     addChangeListener();
-
+    addScrollListener();
 
     const targetNode = document.getElementById('root');
     const config = { attributes: true, childList: true, subtree: true };
@@ -74,6 +74,30 @@ function addChangeListener() {
     });
 }
 
+function addScrollListener() {
+    let lastKnownScrollPositionX = 0;
+    let lastKnownScrollPositionY = 0;
+    let ticking = false;
+
+    document.addEventListener('scroll', function(e) {
+        lastKnownScrollPositionX = window.scrollX;
+        lastKnownScrollPositionY = window.scrollY;
+    
+      if (!ticking) {
+        requestAnimationFrame(function() {
+            sendMessage({
+                operation: 'scroll',
+                selector: 'body', // todo сделать скрол элементов по селектору
+                value: {x: lastKnownScrollPositionX, y: lastKnownScrollPositionY},
+            });
+          ticking = false;
+        });
+    
+        ticking = true;
+      }
+    });
+}
+
 function sendAllDOM() {
     const serializer = new XMLSerializer();
 
@@ -113,6 +137,8 @@ function update({value, selector, operation}: ISyncEvent) {
             break;
         case 'changeChecked':
             element.checked = value;
+        case 'scroll':
+            window.scrollTo(value.x, value.y);
     }
 }
 
@@ -124,7 +150,7 @@ export function initListener() {
 }
 
 interface ISyncEvent {
-    operation: 'update' | 'updateHead' | 'changeValue' | 'changeChecked',
+    operation: 'update' | 'updateHead' | 'changeValue' | 'changeChecked' | 'scroll',
     selector: string,
     value?: string,
 }
