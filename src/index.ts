@@ -15,6 +15,7 @@ export function initObserver() {
     sendAllDOM();
     addChangeListener();
     addScrollListener();
+    addMouseListener();
 
     const targetNode = document.getElementById('root');
     const config = { attributes: true, childList: true, subtree: true };
@@ -71,6 +72,18 @@ function addChangeListener() {
 
         input.addEventListener('change', handler);
         input.addEventListener('keyup', handler);
+    });
+}
+
+function addMouseListener() {
+
+    // TODO throttle
+    document.addEventListener('mousemove', function(e) {
+        sendMessage({
+            operation: 'mouse',
+            selector: 'body',
+            value: {x: e.x, y: e.y},
+        });
     });
 }
 
@@ -139,7 +152,35 @@ function update({value, selector, operation}: ISyncEvent) {
             element.checked = value;
         case 'scroll':
             window.scrollTo(value.x, value.y);
+        case 'mouse':
+            renderPointer(value.x, value.y);
     }
+}
+
+function renderPointer(x: number, y: number) {
+    const selector = 'pointer12345678';
+    let pointer = document.querySelector('.' + selector);
+
+    if (pointer) {
+        pointer.style.top = y + 'px';
+        pointer.style.left = x + 'px';
+        return;
+    }
+
+    pointer = document.createElement('div');
+    pointer.className = selector;
+
+    pointer.style.width = '10px';
+    pointer.style.height = '10px';
+    pointer.style.position = 'fixed';
+    pointer.style.top = y + 'px';
+    pointer.style.left = x + 'px';
+    pointer.style['x-index'] = '100';
+    pointer.style['background-color'] = 'red';
+    pointer.style['border-radius'] = '5px';
+    pointer.style.opacity = '.5';
+
+    document.body.appendChild(pointer);
 }
 
 export function initListener() {
@@ -150,7 +191,7 @@ export function initListener() {
 }
 
 interface ISyncEvent {
-    operation: 'update' | 'updateHead' | 'changeValue' | 'changeChecked' | 'scroll',
+    operation: 'update' | 'updateHead' | 'changeValue' | 'changeChecked' | 'scroll' | 'mouse',
     selector: string,
     value?: string,
 }
