@@ -1,8 +1,18 @@
 import {toJSON, toDOM} from 'domjson';
 // import 'selector-generator';
 import getCssSelector from 'css-selector-generator';
+import io from 'socket.io-client';
 
 const serializer = new XMLSerializer();
+const socket = io.connect("http://localhost:3000");
+
+socket.on('connect', () => {
+    console.log('on connect')
+});
+
+socket.on("connect_error", (d) => {
+    console.log('on connect error', d)
+});
 
 function getSelector(element: Node) {
     // const generator = new SelectorGenerator() as any;
@@ -12,6 +22,7 @@ function getSelector(element: Node) {
 }
 
 export function initObserver() {
+    // initSocket();
     sendAllDOM();
     addChangeListener();
     addScrollListener();
@@ -184,10 +195,15 @@ function renderPointer(x: number, y: number) {
 }
 
 export function initListener() {
-    window.addEventListener('message', function(event) {
-        console.log('Updater - Receive event: ', event.data);
-        update(event.data);
-    })
+    // window.addEventListener('message', function(event) {
+    //     console.log('Updater - Receive event: ', event.data);
+    //     update(event.data);
+    // })
+
+    socket.on('sync', event => {
+        console.log('Updater - Receive event: ', event.message);
+        update(event.message);
+    });
 }
 
 interface ISyncEvent {
@@ -202,15 +218,16 @@ function sendMessage({
     value,
 }: ISyncEvent) {
     console.log('sendMessage', operation, selector, value);
-    window.parent.postMessage({
+
+    socket.emit('sync', {
         operation,
         value,
         selector,
-    }, '*');
+    });
+
+    // window.parent.postMessage({
+    //     operation,
+    //     value,
+    //     selector,
+    // }, '*');
 }
-
-/* TODO list
-    Добавить отправку всего html в начале
-
-
-*/

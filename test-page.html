@@ -3,24 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Test Page</title>
-  <script src="./dist/browser-sharing.js"></script>
   <style>
     .row {
       display: flex;
     }
   </style>
-  <script>
-      window.addEventListener('message', function(event) {
-        console.log('Parent - receive event: ', event.data);
-
-        const masterIframe = document.querySelector('#iframe-master');
-
-        masterIframe.contentWindow.postMessage(
-          event.data,
-          '*',
-        );
-      });
-  </script>
 </head>
 <body>
   <div class='row'>
