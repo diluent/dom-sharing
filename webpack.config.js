@@ -11,7 +11,7 @@ module.exports = (options) => {
   let webpackConfig = {
     devtool: 'cheap-eval-source-map',
     entry: [
-      './src/index.ts'
+      './src/client.ts'
     ],
     mode: process.env.NODE_ENV,
     output: {

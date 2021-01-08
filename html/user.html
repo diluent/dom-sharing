@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Page</title>
+  <style>
+    .radio-btn {
+      display: inline-block;
+    }
+
+    h1 {
+      color: #FCBF49;
+    }
+
+    .wrapper {
+      padding: 30px 0;
+    }
+
+    .scroll-overflow-title {
+      color: #D62828;
+      font-weight: bold;
+    }
+
+    .scroll-overflow-block {
+      width: 100px;
+      height: 50px;
+      overflow: scroll;
+      color: #D62828;
+    }
+
+    .scroll-hidden-title {
+      font-weight: bold;
+      color: #003049;
+    }
+
+    .scroll-hidden-block {
+      width: 100px;
+      height: 50px;
+      overflow: hidden;
+      color: #003049;
+    }
+
+    .textarea-label {
+      display: block;
+      padding-bottom: 10px;
+    }
+
+    .btn {
+      padding: 10px;
+      background-color: #D62828;
+      color: #FFF;
+      font-weight: bold;
+      font-size: 14px;
+      margin-top: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .animation-wrapper {
+      padding: 30px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    #animation-block {
+      width: 30px;
+      height: 30px;
+      background-color: #FCBF49;
+      border-radius: 4px;
+      margin-top: 10px;
+      transition: transform ease 3s;
+    }
+
+    .animation-block-transform {
+      transform: scale(100);
+    }
+
+    .animation-block-transform-remove {
+      transform: scale(1);
+    }
+  </style>
+  <script src="/assets/browser-sharing.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      BrowserSharing.initObserver();
+    });
+  </script>
+</head>
+<body>
+<div id="root">
+  <div>
+    <input type="radio" id="huey" name="drone" value="huey"/>
+    <div class="radio-btn">radio button</div>
+  </div>
+  <h1>hello! this is a beautiful title</h1>
+  <div class="wrapper">
+    <div class="scroll-overflow-title">hello! this is a scroll overflow div</div>
+    <div class="scroll-overflow-block">уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля</div>
+  </div>
+  <div class="wrapper">
+    <div class="scroll-hidden-title">hello! this is a scroll hidden div</div>
+    <div class="scroll-hidden-block">уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля уля ля ля</div>
+  </div>
+  <div class="wrapper">
+    <label class="textarea-label" for="story">Tell us your story:</label>
+    <textarea id="story" name="story" rows="5" cols="33">
+    It was a dark and stormy night...
+    </textarea>
+  </div>
+  <div class="animation-wrapper">
+    <div>CSS animation with timeout is here!</div>
+    <div id="animation-btn" class="btn">click me</div>
+    <div id="animation-block"/>
+  </div>
+  <div class="wrapper">
+    <p>Choose your monster's features:</p>
+    <div>
+      <input type="checkbox" id="scales" name="scales"
+             checked>
+      <label for="scales">Scales</label>
+    </div>
+    <div>
+      <input type="checkbox" id="horns" name="horns">
+      <label for="horns">Horns</label>
+    </div>
+  </div>
+  <div class="animation-wrapper">
+    <div>Simple text input</div>
+    <input type="text">
+  </div>
+</div>
+</body>
+<script>
+  const animationBtn = document.getElementById('animation-btn');
+  const animationBlock = document.getElementById('animation-block');
+  animationBtn.addEventListener('click', function() {
+    console.log('click');
+    setTimeout(() => {
+      animationBlock.classList.add("animation-block-transform");
+    }, 1000);
+    setTimeout(() => {
+      animationBlock.classList.add("animation-block-transform-remove");
+    }, 3000);
+  });
+</script>
+</html>

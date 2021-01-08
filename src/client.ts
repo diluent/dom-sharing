@@ -1,10 +1,20 @@
-import {toJSON, toDOM} from 'domjson';
+// import {toJSON, toDOM} from 'domjson';
 // import 'selector-generator';
 import getCssSelector from 'css-selector-generator';
 import io from 'socket.io-client';
 
+interface IWSEvent {
+    message: ISyncPayload;
+}
+
+interface ISyncPayload {
+    operation: 'update' | 'updateHead' | 'changeValue' | 'changeChecked' | 'scroll' | 'mouse',
+    selector: string,
+    value?: string,
+}
+
 const serializer = new XMLSerializer();
-const socket = io.connect("http://localhost:3000");
+const socket = io.connect();
 
 socket.on('connect', () => {
     console.log('on connect')
@@ -139,7 +149,7 @@ function sendAllDOM() {
     })
 }
 
-function update({value, selector, operation}: ISyncEvent) {
+function update({value, selector, operation}: ISyncPayload) {
     const element = document.querySelector(selector);
 
     if (!element) {
@@ -170,7 +180,7 @@ function update({value, selector, operation}: ISyncEvent) {
 
 function renderPointer(x: number, y: number) {
     const selector = 'pointer12345678';
-    let pointer = document.querySelector('.' + selector);
+    let pointer: HTMLDivElement = document.querySelector('.' + selector);
 
     if (pointer) {
         pointer.style.top = y + 'px';
@@ -200,23 +210,17 @@ export function initListener() {
     //     update(event.data);
     // })
 
-    socket.on('sync', event => {
+    socket.on('sync', (event: IWSEvent) => {
         console.log('Updater - Receive event: ', event.message);
         update(event.message);
     });
-}
-
-interface ISyncEvent {
-    operation: 'update' | 'updateHead' | 'changeValue' | 'changeChecked' | 'scroll' | 'mouse',
-    selector: string,
-    value?: string,
 }
 
 function sendMessage({
     operation,
     selector,
     value,
-}: ISyncEvent) {
+}: ISyncPayload) {
     console.log('sendMessage', operation, selector, value);
 
     socket.emit('sync', {
