@@ -94,6 +94,19 @@ function addChangeListener() {
         input.addEventListener('change', handler);
         input.addEventListener('keyup', handler);
     });
+
+    document.querySelectorAll('textarea').forEach((input: HTMLTextAreaElement) => {
+        const handler = (event: Event) => {
+            sendMessage({
+                operation: 'changeValue',
+                selector: getSelector(event.target as Node),
+                value: event.target.value,
+            });
+        }
+
+        input.addEventListener('change', handler);
+        input.addEventListener('keyup', handler);
+    });
 }
 
 function addMouseListener() {
