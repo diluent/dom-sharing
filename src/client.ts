@@ -32,7 +32,6 @@ function getSelector(element: Node) {
 }
 
 export function initObserver() {
-    // initSocket();
     sendAllDOM();
     addChangeListener();
     addScrollListener();
@@ -195,7 +194,6 @@ function update({value, selector, operation}: ISyncPayload) {
 }
 
 function renderPointer(x: number, y: number) {
-    console.log('renderPointer', x, y);
     const selector = 'pointer12345678';
     let pointer: HTMLDivElement = document.querySelector('.' + selector);
 
@@ -222,11 +220,6 @@ function renderPointer(x: number, y: number) {
 }
 
 export function initListener() {
-    // window.addEventListener('message', function(event) {
-    //     console.log('Updater - Receive event: ', event.data);
-    //     update(event.data);
-    // })
-
     socket.on('sync', (event: IWSEvent) => {
         console.log('Updater - Receive event: ', event.message);
         update(event.message);
@@ -245,10 +238,4 @@ function sendMessage({
         value,
         selector,
     });
-
-    // window.parent.postMessage({
-    //     operation,
-    //     value,
-    //     selector,
-    // }, '*');
 }
