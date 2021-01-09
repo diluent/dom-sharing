@@ -184,20 +184,23 @@ function update({value, selector, operation}: ISyncPayload) {
             break;
         case 'changeChecked':
             element.checked = value;
+            break;
         case 'scroll':
             window.scrollTo(value.x, value.y);
+            break;
         case 'mouse':
             renderPointer(value.x, value.y);
+            break;
     }
 }
 
 function renderPointer(x: number, y: number) {
+    console.log('renderPointer', x, y);
     const selector = 'pointer12345678';
     let pointer: HTMLDivElement = document.querySelector('.' + selector);
 
     if (pointer) {
-        pointer.style.top = y + 'px';
-        pointer.style.left = x + 'px';
+        pointer.style.transform = `translate(${x}px, ${y}px)`;
         return;
     }
 
@@ -207,12 +210,13 @@ function renderPointer(x: number, y: number) {
     pointer.style.width = '10px';
     pointer.style.height = '10px';
     pointer.style.position = 'fixed';
-    pointer.style.top = y + 'px';
-    pointer.style.left = x + 'px';
+    pointer.style.transform = `translate(${x}px, ${y}px)`;
     pointer.style['x-index'] = '100';
     pointer.style['background-color'] = 'red';
     pointer.style['border-radius'] = '5px';
     pointer.style.opacity = '.5';
+    pointer.style.top = '0';
+    pointer.style.left = '0';
 
     document.body.appendChild(pointer);
 }
