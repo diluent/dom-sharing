@@ -25,14 +25,30 @@ app.get('/example', (req, res) => {
     res.sendFile(htmlDir + '/example.html');
 });
 
+app.get('/sessionId', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send({
+        sessionId: Math.floor(Math.random() * 100000),
+    });
+})
+
 io.on('connection', (socket) => {
     ++numUsers;
     console.log('connection %d', numUsers);
 
+    const sessionId = '6534234214234';
+    socket.join(sessionId);
+
     socket.on('sync', (data) => {
-        socket.broadcast.emit('sync', {
-        username: socket.username,
-        message: data
+        // TODO validate
+        if (!data.sessionId) {
+            return;
+        }
+
+        // socket.broadcast.emit('sync', {
+        socket.to(data.sessionId).emit('sync', {
+            username: socket.username,
+            message: data
         });
     });
 

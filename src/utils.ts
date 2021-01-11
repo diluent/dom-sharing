@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { getSessionId } from '@/session';
 
 const socket = io.connect();
 
@@ -28,6 +29,7 @@ export function sendMessage({
     console.log('sendMessage', operation, selector, value);
 
     socket.emit('sync', {
+        sessionId: getSessionId(),
         operation,
         value,
         selector,

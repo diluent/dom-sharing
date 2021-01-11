@@ -1,7 +1,10 @@
-import { addChangeListener, addMouseListener, addScrollListener, initObserver, sendAllDOM, update } from '@/domUtils';
+import { addChangeListener, addMouseListener, addScrollListener, initObserver, sendAllDOM, update, showSessionId } from '@/domUtils';
 import { addSocketListener } from '@/utils';
+import { setSessionId } from '@/session';
 
-export function initClient() {
+export function initClient(sessionId: string) {
+    setSessionId(sessionId);
+    showSessionId();
     sendAllDOM();
     addChangeListener();
     addScrollListener();
@@ -9,7 +12,8 @@ export function initClient() {
     initObserver();
 }
 
-export function initSupervisor() {
+export function initSupervisor(sessionId: string) {
+    setSessionId(sessionId);
     addSocketListener(update);
 }
 
