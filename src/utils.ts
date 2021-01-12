@@ -1,7 +1,13 @@
 import io from 'socket.io-client';
-import { getSessionId } from '@/session';
 
-const socket = io.connect();
+const sessionId = new URLSearchParams(window.location.search).get('sid') || undefined;
+const query = Object.create({});
+
+if (sessionId) {
+    query.sessionId = sessionId;
+}
+
+const socket = io.connect({query});
 
 socket.on('connect', () => {
     console.log('on connect');
@@ -29,7 +35,6 @@ export function sendMessage({
     console.log('sendMessage', operation, selector, value);
 
     socket.emit('sync', {
-        sessionId: getSessionId(),
         operation,
         value,
         selector,

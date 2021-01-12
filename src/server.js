@@ -6,6 +6,7 @@ const io = require('socket.io')(server);
 const port = process.env.PORT || 3000;
 const htmlDir = process.cwd() + '/html';
 let numUsers = 0;
+const sessions = [];
 
 server.listen(port, () => {
     console.log('Server listening at port %d', port);
@@ -25,29 +26,29 @@ app.get('/example', (req, res) => {
     res.sendFile(htmlDir + '/example.html');
 });
 
-app.get('/sessionId', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send({
-        sessionId: Math.floor(Math.random() * 100000),
-    });
-})
-
 io.on('connection', (socket) => {
+    let sessionId = socket.handshake.query.sessionId;
     ++numUsers;
-    console.log('connection %d', numUsers);
+    console.log('connection %d', numUsers, socket.handshake.query.sessionId);
 
-    const sessionId = '6534234214234';
+    if (sessionId && !sessions.find(s => s === sessionId)) {
+        console.log('disconnect');
+        socket.disconnect();
+        return;
+    }
+
+    if (!sessionId) {
+        sessionId = Math.floor(Math.random() * 100000).toString();
+        sessions.push(sessionId);
+        console.log('new session', sessionId);
+    }
+    
     socket.join(sessionId);
 
     socket.on('sync', (data) => {
-        // TODO validate
-        if (!data.sessionId) {
-            return;
-        }
-
         // socket.broadcast.emit('sync', {
-        socket.to(data.sessionId).emit('sync', {
-            username: socket.username,
+        socket.to(sessionId).emit('sync', {
+            // username: socket.username,
             message: data
         });
     });
@@ -56,9 +57,11 @@ io.on('connection', (socket) => {
         --numUsers;
         console.log('disconnect %d', numUsers);
 
-        socket.broadcast.emit('user left', {
-            username: socket.username,
-            numUsers: numUsers
-        });
+        // socket.broadcast.emit('user left', {
+        //     username: socket.username,
+        //     numUsers: numUsers
+        // });
     });
 });
+
+// TODO подумать про то как запрашивать начало передачи данных
