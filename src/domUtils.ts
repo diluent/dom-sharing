@@ -1,6 +1,5 @@
 import { sendMessage, ISyncPayload } from '@/utils';
 import getCssSelector from 'css-selector-generator';
-import { getSessionId } from '@/session';
 
 const serializer = new XMLSerializer();
 
@@ -185,7 +184,7 @@ function renderPointer(x: number, y: number) {
 
 export function showSessionId() {
     const value = `
-        <div style='position: fixed; top: 0; right: 0; background-color: #f1f1f1; padding: 5px;'>ID: ${getSessionId()}</div>
+        <div style='position: fixed; top: 0; right: 0; background-color: #f1f1f1; padding: 5px;'>ID: 123</div>
     `;
     document.body.insertAdjacentHTML('beforeend', value);
 }

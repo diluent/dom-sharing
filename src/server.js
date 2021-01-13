@@ -28,7 +28,6 @@ app.get('/example', (req, res) => {
 
 io.on('connection', (socket) => {
     let sessionId = socket.handshake.query.sessionId;
-    ++numUsers;
     console.log('connection %d', numUsers, socket.handshake.query.sessionId);
 
     if (sessionId && !sessions.find(s => s === sessionId)) {
@@ -37,6 +36,8 @@ io.on('connection', (socket) => {
         return;
     }
 
+    ++numUsers;
+
     if (!sessionId) {
         sessionId = Math.floor(Math.random() * 100000).toString();
         sessions.push(sessionId);
@@ -44,6 +45,10 @@ io.on('connection', (socket) => {
     }
     
     socket.join(sessionId);
+
+    socket.on('ready', () => {
+        socket.to(sessionId).emit('start');
+    });
 
     socket.on('sync', (data) => {
         // socket.broadcast.emit('sync', {

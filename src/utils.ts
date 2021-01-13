@@ -47,3 +47,11 @@ export function addSocketListener(cb: (message: ISyncPayload) => void) {
         cb(event.message);
     });
 }
+
+export function start() {
+    socket.emit('ready');
+}
+
+export function addSessionStartListener(cb: Function) {
+    socket.on('start', cb);
+}
