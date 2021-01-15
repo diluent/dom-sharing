@@ -12,6 +12,11 @@ server.listen(port, () => {
     console.log('Server listening at port %d', port);
 });
 
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
+
 app.use('/assets', express.static(path.resolve('dist')));
 
 app.get('/admin', (req, res) => {
@@ -24,6 +29,11 @@ app.get('/user', (req, res) => {
 
 app.get('/example', (req, res) => {
     res.sendFile(htmlDir + '/example.html');
+});
+
+
+app.get('/sessions', (req, res) => {
+    res.send({sessions});
 });
 
 io.on('connection', (socket) => {
@@ -68,5 +78,3 @@ io.on('connection', (socket) => {
         // });
     });
 });
-
-// TODO подумать про то как запрашивать начало передачи данных
